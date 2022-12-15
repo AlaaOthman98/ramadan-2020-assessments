@@ -4,34 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Semicolon | video request</title>
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-    />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
   </head>
   <body>
     <div class="container my-5">
       <div class="formContainer my-5">
-        <form action="" method="POST">
+        <form id="videoRequestForm">
           <div class="row">
             <div class="col-md">
               <div class="form-group">
                 <label for="author_name">Your name *</label>
-                <input
-                  class="form-control"
-                  name="author_name"
-                  placeholder="Write your name here"
-                />
+                <input class="form-control" name="author_name" placeholder="Write your name here" />
               </div>
             </div>
             <div class="col-md">
               <div class="form-group">
                 <label for="author_email">Your email *</label>
-                <input
-                  class="form-control"
-                  name="author_email"
-                  placeholder="Write your email here"
-                />
+                <input class="form-control" name="author_email" placeholder="Write your email here" />
               </div>
             </div>
           </div>
@@ -50,11 +39,7 @@
             <div class="col-md">
               <div class="form-group">
                 <label for="target_level">Target level</label>
-                <select
-                  class="form-control"
-                  name="target_level"
-                  placeholder="Write your name here"
-                >
+                <select class="form-control" name="target_level" placeholder="Write your name here">
                   <option value="begineer">Beginner</option>
                   <option value="medium">Medium</option>
                   <option value="advanced">Advanced</option>
@@ -85,9 +70,7 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-success mt-3">
-            Send video request
-          </button>
+          <button type="submit" class="btn btn-success mt-3">Send video request</button>
         </form>
       </div>
       <hr />
@@ -98,9 +81,7 @@
             <div class="d-flex flex-column">
               <h3>Dummy Topic title</h3>
               <p class="text-muted mb-2">dummy topic details</p>
-              <p class="mb-0 text-muted">
-                <strong>Expected results:</strong> Dummy expected result text
-              </p>
+              <p class="mb-0 text-muted"><strong>Expected results:</strong> Dummy expected result text</p>
             </div>
             <div class="d-flex flex-column text-center">
               <a class="btn btn-link">🔺</a>
@@ -114,16 +95,15 @@
               &bullet; added by <strong>Fake Name</strong> on
               <strong>Sat Apr 11 2020</strong>
             </div>
-            <div
-              class="d-flex justify-content-center flex-column 408ml-auto mr-2"
-            >
-              <div class="badge badge-success">
-                Beginners
-              </div>
+            <div class="d-flex justify-content-center flex-column 408ml-auto mr-2">
+              <div class="badge badge-success">Beginners</div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <script src="app.js"></script>
   </body>
 </html>
+
