@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
       data.forEach((videoRequestInfo) => {
         const videoRequestCard = getVideoRequestCard(videoRequestInfo);
         videoRequestListElm.appendChild(videoRequestCard);
+
+        addVotingListener(videoRequestInfo);
       });
     });
 
@@ -28,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .then((data) => {
         const videoRequestCard = getVideoRequestCard(data);
         videoRequestListElm.prepend(videoRequestCard);
+
+        addVotingListener(data);
       });
   });
 });
@@ -46,9 +50,11 @@ const getVideoRequestCard = (videoRequestInfo) => {
         }
       </div>
       <div class="d-flex flex-column text-center">
-        <a class="btn btn-link">🔺</a>
-        <h3>${videoRequestInfo.votes.ups - videoRequestInfo.votes.downs}</h3>
-        <a class="btn btn-link">🔻</a>
+        <a id="voteUp_${videoRequestInfo._id}" class="btn btn-link">🔺</a>
+        <h3 id="voteScore_${videoRequestInfo._id}">
+          ${videoRequestInfo.votes.ups - videoRequestInfo.votes.downs}
+        </h3>
+        <a id="voteDown_${videoRequestInfo._id}" class="btn btn-link">🔻</a>
       </div>
     </div>
     <div class="card-footer d-flex flex-row justify-content-between">
@@ -65,5 +71,29 @@ const getVideoRequestCard = (videoRequestInfo) => {
   `;
 
   return dummyDiv.children[0];
+};
+
+const addVotingListener = (videoRequestInfo) => {
+  const voteUpElm = document.getElementById(`voteUp_${videoRequestInfo._id}`);
+  const voteDownElm = document.getElementById(`voteDown_${videoRequestInfo._id}`);
+  const voteScoreElm = document.getElementById(`voteScore_${videoRequestInfo._id}`);
+
+  voteUpElm.addEventListener("click", () => voteHandler(videoRequestInfo._id, "ups", voteScoreElm));
+  voteDownElm.addEventListener("click", () => voteHandler(videoRequestInfo._id, "downs", voteScoreElm));
+};
+
+const voteHandler = (videoRequestId, voteType, voteScoreElm) => {
+  fetch("http://localhost:7777/video-request/vote", {
+    method: "PUT",
+    headers: { "content-Type": "application/json" },
+    body: JSON.stringify({
+      id: videoRequestId,
+      vote_type: voteType,
+    }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      voteScoreElm.innerText = data.ups - data.downs;
+    });
 };
 
