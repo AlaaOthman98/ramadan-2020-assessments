@@ -3,21 +3,29 @@
  * window.load() => fires after all elements (including images and styles) in the page loaded
  */
 
+const videoRequestListElm = document.getElementById("listOfRequests");
+
 document.addEventListener("DOMContentLoaded", () => {
   const videoRequestFormElm = document.getElementById("videoRequestForm");
-  const videoRequestListElm = document.getElementById("listOfRequests");
+  const sortByElms = document.querySelectorAll("[id*=sortBy_]");
 
-  // Get list of existed videos
-  fetch("http://localhost:7777/video-request")
-    .then((res) => res.json())
-    .then((data) => {
-      data.forEach((videoRequestInfo) => {
-        const videoRequestCard = getVideoRequestCard(videoRequestInfo);
-        videoRequestListElm.appendChild(videoRequestCard);
+  loadVideoRequests();
 
-        addVotingListener(videoRequestInfo);
-      });
+  sortByElms.forEach((sortByElm) => {
+    sortByElm.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const sortBy = this.querySelector("input").value;
+      loadVideoRequests(sortBy);
+
+      this.classList.add("active");
+      if (sortBy === "topVoted") {
+        document.getElementById("sortBy_NewlyAdded").classList.remove("active");
+      } else {
+        document.getElementById("sortBy_TopVoted").classList.remove("active");
+      }
     });
+  });
 
   // Post video object to the server on submit
   videoRequestFormElm.addEventListener("submit", (e) => {
@@ -94,6 +102,21 @@ const voteHandler = (videoRequestId, voteType, voteScoreElm) => {
     .then((res) => res.json())
     .then((data) => {
       voteScoreElm.innerText = data.ups - data.downs;
+    });
+};
+
+const loadVideoRequests = (sortBy = "newlyAdded") => {
+  fetch(`http://localhost:7777/video-request?sortBy=${sortBy}`)
+    .then((res) => res.json())
+    .then((data) => {
+      videoRequestListElm.innerHTML = "";
+
+      data.forEach((videoRequestInfo) => {
+        const videoRequestCard = getVideoRequestCard(videoRequestInfo);
+        videoRequestListElm.appendChild(videoRequestCard);
+
+        addVotingListener(videoRequestInfo);
+      });
     });
 };
 
