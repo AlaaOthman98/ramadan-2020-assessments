@@ -9,18 +9,30 @@
   <body>
     <div class="container my-5">
       <div class="formContainer my-5">
-        <form id="videoRequestForm">
+        <form id="videoRequestForm" novalidate>
           <div class="row">
             <div class="col-md">
               <div class="form-group">
                 <label for="author_name">Your name *</label>
-                <input class="form-control" name="author_name" placeholder="Write your name here" />
+                <input
+                  class="form-control"
+                  type="text"
+                  name="author_name"
+                  placeholder="Write your name here"
+                />
+                <p class="invalid-feedback">This field is required.</p>
               </div>
             </div>
             <div class="col-md">
               <div class="form-group">
                 <label for="author_email">Your email *</label>
-                <input class="form-control" name="author_email" placeholder="Write your email here" />
+                <input
+                  class="form-control"
+                  type="email"
+                  name="author_email"
+                  placeholder="Write your email here"
+                />
+                <p class="invalid-feedback">This field is required and should be valid email.</p>
               </div>
             </div>
           </div>
@@ -31,9 +43,11 @@
                 <label for="topic_title">Topic *</label>
                 <input
                   class="form-control"
+                  type="text"
                   name="topic_title"
                   placeholder="Write your suggested topic here"
                 />
+                <p class="invalid-feedback">This field is required and shouldn't exceed 100 in length.</p>
               </div>
             </div>
             <div class="col-md">
@@ -56,6 +70,7 @@
                   name="topic_details"
                   placeholder="Write your topic in more details here"
                 ></textarea>
+                <p class="invalid-feedback">This field is required.</p>
               </div>
             </div>
             <div class="col-md">

@@ -44,6 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     const formData = new FormData(videoRequestFormElm);
+    const isFormValid = validateFormData(formData);
+
+    if (!isFormValid) return;
 
     fetch("http://localhost:7777/video-request", { method: "POST", body: formData })
       .then((res) => res.json())
@@ -130,6 +133,44 @@ const loadVideoRequests = (sortBy = "newlyAdded", searchKey = "") => {
         addVotingListener(videoRequestInfo);
       });
     });
+};
+
+const validateFormData = (formData) => {
+  const name = formData.get("author_name");
+  const email = formData.get("author_email");
+  const topicTitle = formData.get("topic_title");
+  const topicDetails = formData.get("topic_details");
+
+  if (!name) {
+    document.querySelector("[name=author_name]").classList.add("is-invalid");
+  }
+
+  const emailRegex =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (!email || !emailRegex.test(email)) {
+    document.querySelector("[name=author_email]").classList.add("is-invalid");
+  }
+
+  if (!topicTitle || topicTitle.length > 100) {
+    document.querySelector("[name=topic_title]").classList.add("is-invalid");
+  }
+
+  if (!topicDetails) {
+    document.querySelector("[name=topic_details]").classList.add("is-invalid");
+  }
+
+  const allInvalidElms = document.getElementById("videoRequestForm").querySelectorAll(".is-invalid");
+
+  if (allInvalidElms.length) {
+    allInvalidElms.forEach((invalidElm) => {
+      invalidElm.addEventListener("input", function () {
+        this.classList.remove("is-invalid");
+      });
+    });
+    return false;
+  }
+
+  return true;
 };
 
 const debounce = (fn, time) => {
