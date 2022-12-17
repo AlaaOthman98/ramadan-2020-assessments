@@ -25,20 +25,23 @@ app.post("/video-request", upload.none(), async (req, res, next) => {
 });
 
 app.get("/video-request", async (req, res, next) => {
-  const { sortBy } = req.query;
-  const data = await VideoRequestData.getAllVideoRequests();
+  const { sortBy, searchKey } = req.query;
+  let data;
+
+  if (searchKey) {
+    data = await VideoRequestData.searchRequests(searchKey);
+  } else {
+    data = await VideoRequestData.getAllVideoRequests();
+  }
 
   if (sortBy === "topVoted") {
-    const sortedData = data.sort((prev, next) => {
+    data = data.sort((prev, next) => {
       if (prev.votes.ups - prev.votes.downs > next.votes.ups - next.votes.downs) return -1;
       else return 1;
     });
-
-    res.send(sortedData);
-  } else {
-    res.send(data);
   }
 
+  res.send(data);
   next();
 });
 

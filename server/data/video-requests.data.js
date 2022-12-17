@@ -11,7 +11,7 @@ module.exports = {
   },
 
   searchRequests: (topic) => {
-    return VideoRequest.find({ topic_title: topic }).sort({ addedAt: "-1" }).limit(top);
+    return VideoRequest.find({ topic_title: { $regex: topic, $options: "i" } }).sort({ submit_date: "-1" });
   },
 
   getRequestById: (id) => {

@@ -4,10 +4,13 @@
  */
 
 const videoRequestListElm = document.getElementById("listOfRequests");
+let sortBy = "newlyAdded";
+let searchKey = "";
 
 document.addEventListener("DOMContentLoaded", () => {
   const videoRequestFormElm = document.getElementById("videoRequestForm");
   const sortByElms = document.querySelectorAll("[id*=sortBy_]");
+  const searchBoxElm = document.getElementById("searchBox");
 
   loadVideoRequests();
 
@@ -15,8 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     sortByElm.addEventListener("click", function (e) {
       e.preventDefault();
 
-      const sortBy = this.querySelector("input").value;
-      loadVideoRequests(sortBy);
+      sortBy = this.querySelector("input").value;
+      loadVideoRequests(sortBy, searchKey);
 
       this.classList.add("active");
       if (sortBy === "topVoted") {
@@ -26,6 +29,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
+
+  searchBoxElm.addEventListener(
+    "input",
+    debounce((e) => {
+      console.log(this);
+      searchKey = e.target.value;
+      loadVideoRequests(sortBy, searchKey);
+    }, 500)
+  );
 
   // Post video object to the server on submit
   videoRequestFormElm.addEventListener("submit", (e) => {
@@ -105,8 +117,8 @@ const voteHandler = (videoRequestId, voteType, voteScoreElm) => {
     });
 };
 
-const loadVideoRequests = (sortBy = "newlyAdded") => {
-  fetch(`http://localhost:7777/video-request?sortBy=${sortBy}`)
+const loadVideoRequests = (sortBy = "newlyAdded", searchKey = "") => {
+  fetch(`http://localhost:7777/video-request?sortBy=${sortBy}&searchKey=${searchKey}`)
     .then((res) => res.json())
     .then((data) => {
       videoRequestListElm.innerHTML = "";
@@ -118,5 +130,14 @@ const loadVideoRequests = (sortBy = "newlyAdded") => {
         addVotingListener(videoRequestInfo);
       });
     });
+};
+
+const debounce = (fn, time) => {
+  let timeout;
+
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => fn.apply(this, args), time);
+  };
 };
 
