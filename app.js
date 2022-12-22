@@ -4,13 +4,27 @@
  */
 
 const videoRequestListElm = document.getElementById("listOfRequests");
-let sortBy = "newlyAdded";
-let searchKey = "";
+
+const state = {
+  sortBy: "newlyAdded",
+  searchKey: "",
+  userId: "",
+};
 
 document.addEventListener("DOMContentLoaded", () => {
   const videoRequestFormElm = document.getElementById("videoRequestForm");
   const sortByElms = document.querySelectorAll("[id*=sortBy_]");
   const searchBoxElm = document.getElementById("searchBox");
+
+  const loginFormElm = document.querySelector(".login-form");
+  const appContent = document.querySelector(".app-content");
+
+  if (window.location.search) {
+    state.userId = new URLSearchParams(window.location.search).get("id");
+
+    loginFormElm.classList.add("d-none");
+    appContent.classList.remove("d-none");
+  }
 
   loadVideoRequests();
 
@@ -18,11 +32,11 @@ document.addEventListener("DOMContentLoaded", () => {
     sortByElm.addEventListener("click", function (e) {
       e.preventDefault();
 
-      sortBy = this.querySelector("input").value;
-      loadVideoRequests(sortBy, searchKey);
+      state.sortBy = this.querySelector("input").value;
+      loadVideoRequests(state.sortBy, state.searchKey);
 
       this.classList.add("active");
-      if (sortBy === "topVoted") {
+      if (state.sortBy === "topVoted") {
         document.getElementById("sortBy_NewlyAdded").classList.remove("active");
       } else {
         document.getElementById("sortBy_TopVoted").classList.remove("active");
@@ -34,8 +48,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "input",
     debounce((e) => {
       console.log(this);
-      searchKey = e.target.value;
-      loadVideoRequests(sortBy, searchKey);
+      state.searchKey = e.target.value;
+      loadVideoRequests(state.sortBy, state.searchKey);
     }, 500)
   );
 
@@ -44,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
 
     const formData = new FormData(videoRequestFormElm);
+    formData.append("author_id", state.userId);
+
     const isFormValid = validateFormData(formData);
 
     if (!isFormValid) return;
@@ -136,20 +152,8 @@ const loadVideoRequests = (sortBy = "newlyAdded", searchKey = "") => {
 };
 
 const validateFormData = (formData) => {
-  const name = formData.get("author_name");
-  const email = formData.get("author_email");
   const topicTitle = formData.get("topic_title");
   const topicDetails = formData.get("topic_details");
-
-  if (!name) {
-    document.querySelector("[name=author_name]").classList.add("is-invalid");
-  }
-
-  const emailRegex =
-    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  if (!email || !emailRegex.test(email)) {
-    document.querySelector("[name=author_email]").classList.add("is-invalid");
-  }
 
   if (!topicTitle || topicTitle.length > 100) {
     document.querySelector("[name=topic_title]").classList.add("is-invalid");
