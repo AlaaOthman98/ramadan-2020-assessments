@@ -91,7 +91,7 @@ const getVideoRequestCard = (videoRequestInfo) => {
       <div class="d-flex flex-column text-center">
         <a id="voteUp_${videoRequestInfo._id}" class="btn btn-link">🔺</a>
         <h3 id="voteScore_${videoRequestInfo._id}">
-          ${videoRequestInfo.votes.ups - videoRequestInfo.votes.downs}
+          ${videoRequestInfo.votes.ups?.length - videoRequestInfo.votes.downs?.length}
         </h3>
         <a id="voteDown_${videoRequestInfo._id}" class="btn btn-link">🔻</a>
       </div>
@@ -128,12 +128,36 @@ const voteHandler = (videoRequestId, voteType, voteScoreElm) => {
     body: JSON.stringify({
       id: videoRequestId,
       vote_type: voteType,
+      user_id: state.userId,
     }),
   })
     .then((res) => res.json())
     .then((data) => {
-      voteScoreElm.innerText = data.ups - data.downs;
+      voteScoreElm.innerText = data.ups.length - data.downs.length;
+
+      applyVoteStyle(videoRequestId, voteType, data);
     });
+};
+
+const applyVoteStyle = (videoRequestId, voteType, votesList) => {
+  if (!voteType) {
+    if (votesList.ups.includes(state.userId)) voteType = "ups";
+    else if (votesList.downs.includes(state.userId)) voteType = "downs";
+    else return;
+  }
+
+  const voteUpElm = document.getElementById(`voteUp_${videoRequestId}`);
+  const voteDownElm = document.getElementById(`voteDown_${videoRequestId}`);
+
+  const targetVoteElm = voteType === "ups" ? voteUpElm : voteDownElm;
+  const otherTargetVoteElm = voteType === "ups" ? voteDownElm : voteUpElm;
+
+  if (votesList[voteType].includes(state.userId)) {
+    targetVoteElm.style.opacity = 1;
+    otherTargetVoteElm.style.opacity = 0.5;
+  } else {
+    otherTargetVoteElm.style.opacity = 1;
+  }
 };
 
 const loadVideoRequests = (sortBy = "newlyAdded", searchKey = "") => {
@@ -145,6 +169,8 @@ const loadVideoRequests = (sortBy = "newlyAdded", searchKey = "") => {
       data.forEach((videoRequestInfo) => {
         const videoRequestCard = getVideoRequestCard(videoRequestInfo);
         videoRequestListElm.appendChild(videoRequestCard);
+
+        applyVoteStyle(videoRequestInfo._id, null, videoRequestInfo.votes);
 
         addVotingListener(videoRequestInfo);
       });
